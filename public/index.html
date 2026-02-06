@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeSend - Encrypted File Sharing</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span class="lock-icon">&#128274;</span> SafeSend</h1>
+      <p class="tagline">End-to-end encrypted file sharing</p>
+      <div class="badges">
+        <span class="badge">&#128274; AES-256-GCM Encrypted</span>
+        <span class="badge">&#128165; Deleted After Download</span>
+        <span class="badge">&#9200; Expires in 10 Minutes</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Upload Section -->
+      <section id="upload-section">
+        <div id="drop-zone" class="drop-zone">
+          <div class="drop-icon">&#128449;</div>
+          <p>Drag & drop a file here</p>
+          <p class="small">or click to browse</p>
+          <p class="limit">Maximum file size: 50 MB</p>
+        </div>
+        <input type="file" id="file-input" hidden>
+      </section>
+
+      <!-- Progress Section -->
+      <section id="progress-section" style="display: none;">
+        <div class="progress-container">
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+          <p id="progress-text" class="progress-text">Preparing...</p>
+        </div>
+      </section>
+
+      <!-- Result Section -->
+      <section id="result-section" style="display: none;">
+        <div class="result-card">
+          <div class="success-icon">&#10003;</div>
+          <h2>File Encrypted & Uploaded</h2>
+          <div class="file-info">
+            <span id="file-name"></span>
+            <span id="file-size" class="file-size"></span>
+          </div>
+          <div class="link-box">
+            <input type="text" id="share-link" readonly>
+            <button id="copy-btn" class="btn">Copy Link</button>
+          </div>
+          <p class="warning">This link works once. The file is deleted after download or after 10 minutes.</p>
+          <button id="upload-another" class="btn btn-secondary">Upload Another File</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Files are encrypted in your browser. The server never sees your data.</p>
+    </footer>
+  </div>
+
+  <script src="/js/crypto.js"></script>
+  <script src="/js/upload.js"></script>
+</body>
+</html>

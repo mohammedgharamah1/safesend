@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeSend - Download File</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span class="lock-icon">&#128274;</span> SafeSend</h1>
+      <p class="tagline">End-to-end encrypted file sharing</p>
+    </header>
+
+    <main>
+      <!-- Loading Status -->
+      <section id="status-section">
+        <div class="status-card">
+          <div class="spinner"></div>
+          <p id="status-text">Checking file status...</p>
+        </div>
+      </section>
+
+      <!-- Download Ready -->
+      <section id="download-section" style="display: none;">
+        <div class="result-card">
+          <div class="file-preview">
+            <div class="file-icon">&#128196;</div>
+            <div class="file-details">
+              <span id="dl-filename" class="dl-filename"></span>
+              <span id="dl-filesize" class="file-size"></span>
+            </div>
+          </div>
+          <div class="badges download-badges">
+            <span class="badge">&#128274; End-to-End Encrypted</span>
+            <span class="badge">&#128165; One-Time Download</span>
+          </div>
+          <button id="download-btn" class="btn btn-large">Download & Decrypt</button>
+          <p class="warning">This file will be permanently deleted from the server after you download it.</p>
+        </div>
+      </section>
+
+      <!-- Error -->
+      <section id="error-section" style="display: none;">
+        <div class="error-card">
+          <div class="error-icon">&#10007;</div>
+          <h2>Unavailable</h2>
+          <p id="error-message"></p>
+          <a href="/" class="btn btn-secondary">Send a File</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Files are decrypted in your browser. The server never sees your data.</p>
+    </footer>
+  </div>
+
+  <script src="/js/crypto.js"></script>
+  <script src="/js/download.js"></script>
+</body>
+</html>
