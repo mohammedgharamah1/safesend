@@ -1,15 +1,20 @@
 const statusSection = document.getElementById('status-section');
 const downloadSection = document.getElementById('download-section');
+const textDownloadSection = document.getElementById('text-download-section');
+const textRevealedSection = document.getElementById('text-revealed-section');
 const errorSection = document.getElementById('error-section');
 const statusText = document.getElementById('status-text');
 const dlFileName = document.getElementById('dl-filename');
 const dlFileSize = document.getElementById('dl-filesize');
 const downloadBtn = document.getElementById('download-btn');
+const revealBtn = document.getElementById('reveal-btn');
 const errorMessage = document.getElementById('error-message');
 
 const pathParts = window.location.pathname.split('/');
 const token = pathParts[pathParts.length - 1];
 const encryptionKey = window.location.hash.slice(1);
+
+let fileType = 'file';
 
 function formatSize(bytes) {
   if (bytes < 1024) return bytes + ' B';
@@ -20,6 +25,7 @@ function formatSize(bytes) {
 function showError(msg) {
   statusSection.style.display = 'none';
   downloadSection.style.display = 'none';
+  textDownloadSection.style.display = 'none';
   errorSection.style.display = 'block';
   errorMessage.textContent = msg;
 }
@@ -50,19 +56,26 @@ async function checkStatus() {
     }
 
     const file = await res.json();
+    fileType = file.type || 'file';
     statusSection.style.display = 'none';
-    downloadSection.style.display = 'block';
-    dlFileName.textContent = file.filename;
-    dlFileSize.textContent = formatSize(file.size);
+
+    if (fileType === 'text') {
+      textDownloadSection.style.display = 'block';
+    } else {
+      downloadSection.style.display = 'block';
+      dlFileName.textContent = file.filename;
+      dlFileSize.textContent = formatSize(file.size);
+    }
 
   } catch (err) {
     showError('Could not connect to server.');
   }
 }
 
-downloadBtn.addEventListener('click', async () => {
-  downloadBtn.disabled = true;
-  downloadBtn.textContent = 'Downloading & Decrypting...';
+async function handleDownload() {
+  const btn = fileType === 'text' ? revealBtn : downloadBtn;
+  btn.disabled = true;
+  btn.textContent = fileType === 'text' ? 'Decrypting...' : 'Downloading & Decrypting...';
 
   try {
     const res = await fetch(`/api/download/${token}`);
@@ -75,34 +88,46 @@ downloadBtn.addEventListener('click', async () => {
 
     const { filename, iv, data } = await res.json();
 
-    // Decode base64 encrypted data
     const encryptedBytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
-
-    // Import the key and decrypt
     const key = await importKey(encryptionKey);
     const decrypted = await decryptFile(encryptedBytes, key, iv);
 
-    // Trigger download
-    const blob = new Blob([decrypted]);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (fileType === 'text') {
+      const text = new TextDecoder().decode(decrypted);
+      textDownloadSection.style.display = 'none';
+      textRevealedSection.style.display = 'block';
+      document.getElementById('revealed-text').textContent = text;
 
-    // Show success state
-    downloadSection.innerHTML = `
-      <div class="success-icon">&#10003;</div>
-      <h2>Download Complete</h2>
-      <p class="subtitle">The file has been decrypted and downloaded.<br>The server copy has been permanently deleted.</p>
-    `;
+      document.getElementById('copy-text-btn').addEventListener('click', () => {
+        navigator.clipboard.writeText(text).then(() => {
+          document.getElementById('copy-text-btn').textContent = 'Copied!';
+          setTimeout(() => { document.getElementById('copy-text-btn').textContent = 'Copy Text'; }, 2000);
+        });
+      });
+    } else {
+      const blob = new Blob([decrypted]);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      downloadSection.innerHTML = `
+        <div class="success-icon">&#10003;</div>
+        <h2>Download Complete</h2>
+        <p class="subtitle">The file has been decrypted and downloaded.<br>The server copy has been permanently deleted.</p>
+      `;
+    }
 
   } catch (err) {
     showError('Decryption failed. The link may be corrupted.');
   }
-});
+}
+
+downloadBtn.addEventListener('click', handleDownload);
+revealBtn.addEventListener('click', handleDownload);
 
 checkStatus();

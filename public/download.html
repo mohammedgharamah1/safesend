@@ -22,7 +22,7 @@
         </div>
       </section>
 
-      <!-- Download Ready -->
+      <!-- Download Ready (File) -->
       <section id="download-section" style="display: none;">
         <div class="result-card">
           <div class="file-preview">
@@ -38,6 +38,29 @@
           </div>
           <button id="download-btn" class="btn btn-large">Download & Decrypt</button>
           <p class="warning">This file will be permanently deleted from the server after you download it.</p>
+        </div>
+      </section>
+
+      <!-- Download Ready (Text) -->
+      <section id="text-download-section" style="display: none;">
+        <div class="result-card">
+          <div class="badges download-badges">
+            <span class="badge">&#128274; End-to-End Encrypted</span>
+            <span class="badge">&#128165; One-Time View</span>
+          </div>
+          <button id="reveal-btn" class="btn btn-large">Decrypt & Reveal</button>
+          <p class="warning">This text will be permanently deleted from the server after you view it.</p>
+        </div>
+      </section>
+
+      <!-- Text Revealed -->
+      <section id="text-revealed-section" style="display: none;">
+        <div class="result-card">
+          <div class="success-icon">&#128274;</div>
+          <h2>Decrypted Message</h2>
+          <div class="revealed-text" id="revealed-text"></div>
+          <button id="copy-text-btn" class="btn" style="margin-top: 16px;">Copy Text</button>
+          <p class="subtitle">This message has been permanently deleted from the server.</p>
         </div>
       </section>
 

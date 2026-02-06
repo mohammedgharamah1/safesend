@@ -10,7 +10,7 @@
   <div class="container">
     <header>
       <h1><span class="lock-icon">&#128274;</span> SafeSend</h1>
-      <p class="tagline">End-to-end encrypted file sharing</p>
+      <p class="tagline">End-to-end encrypted file & text sharing</p>
       <div class="badges">
         <span class="badge">&#128274; AES-256-GCM Encrypted</span>
         <span class="badge">&#128165; Deleted After Download</span>
@@ -21,13 +21,23 @@
     <main>
       <!-- Upload Section -->
       <section id="upload-section">
-        <div id="drop-zone" class="drop-zone">
-          <div class="drop-icon">&#128449;</div>
-          <p>Drag & drop a file here</p>
-          <p class="small">or click to browse</p>
-          <p class="limit">Maximum file size: 50 MB</p>
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="file">File</button>
+          <button class="mode-tab" data-mode="text">Text</button>
         </div>
-        <input type="file" id="file-input" hidden>
+        <div id="file-mode">
+          <div id="drop-zone" class="drop-zone">
+            <div class="drop-icon">&#128449;</div>
+            <p>Drag & drop a file here</p>
+            <p class="small">or click to browse</p>
+            <p class="limit">Maximum file size: 50 MB</p>
+          </div>
+          <input type="file" id="file-input" hidden>
+        </div>
+        <div id="text-mode" style="display: none;">
+          <textarea id="text-input" class="text-input" placeholder="Type or paste your text here..." rows="8"></textarea>
+          <button id="send-text-btn" class="btn btn-large">Encrypt & Send</button>
+        </div>
       </section>
 
       <!-- Progress Section -->

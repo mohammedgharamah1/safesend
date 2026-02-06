@@ -118,3 +118,72 @@ document.getElementById('upload-another').addEventListener('click', () => {
   progressBar.style.width = '0%';
   fileInput.value = '';
 });
+
+// Mode tabs
+document.querySelectorAll('.mode-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const mode = tab.dataset.mode;
+    document.getElementById('file-mode').style.display = mode === 'file' ? 'block' : 'none';
+    document.getElementById('text-mode').style.display = mode === 'text' ? 'block' : 'none';
+  });
+});
+
+// Send text
+document.getElementById('send-text-btn').addEventListener('click', async () => {
+  const text = document.getElementById('text-input').value.trim();
+  if (!text) return;
+
+  uploadSection.style.display = 'none';
+  progressSection.style.display = 'block';
+
+  try {
+    progressText.textContent = 'Generating encryption key...';
+    progressBar.style.width = '10%';
+    const key = await generateKey();
+    const keyStr = await exportKey(key);
+
+    progressText.textContent = 'Encrypting text...';
+    progressBar.style.width = '40%';
+    const blob = new Blob([new TextEncoder().encode(text)]);
+    const file = new File([blob], 'text');
+    const { encrypted, iv } = await encryptFile(file, key);
+
+    progressText.textContent = 'Uploading encrypted text...';
+    progressBar.style.width = '70%';
+
+    const encryptedBase64 = btoa(String.fromCharCode(...encrypted));
+
+    const res = await fetch('/api/upload-text', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: encryptedBase64, iv })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Upload failed');
+    }
+
+    const { token } = await res.json();
+
+    progressBar.style.width = '100%';
+    progressText.textContent = 'Done!';
+
+    const link = `${window.location.origin}/d/${token}#${keyStr}`;
+
+    setTimeout(() => {
+      progressSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      fileName.textContent = 'Encrypted Text';
+      fileSize.textContent = formatSize(new Blob([text]).size);
+      shareLink.value = link;
+    }, 500);
+
+  } catch (err) {
+    progressSection.style.display = 'none';
+    uploadSection.style.display = 'block';
+    alert('Error: ' + err.message);
+  }
+});

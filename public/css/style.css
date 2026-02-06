@@ -320,6 +320,80 @@ footer p {
   font-size: 0.8rem;
 }
 
+/* Mode Tabs */
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 20px;
+  background: #111;
+  border-radius: 10px;
+  padding: 4px;
+  border: 1px solid #222;
+}
+
+.mode-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #666;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mode-tab.active {
+  background: #4a4aff;
+  color: #fff;
+}
+
+.mode-tab:hover:not(.active) {
+  color: #aaa;
+}
+
+/* Text Input */
+.text-input {
+  width: 100%;
+  background: #111;
+  border: 2px solid #333;
+  border-radius: 12px;
+  color: #e0e0e0;
+  padding: 20px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  margin-bottom: 16px;
+  min-height: 160px;
+}
+
+.text-input:focus {
+  border-color: #4a4aff;
+}
+
+.text-input::placeholder {
+  color: #555;
+}
+
+/* Revealed Text */
+.revealed-text {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .container {

@@ -28,6 +28,7 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }
 });
 
+app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Download page route - serve download.html for /d/:token
@@ -54,10 +55,32 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   const now = new Date();
   const expires = new Date(now.getTime() + 10 * 60 * 1000);
 
-  saveFile.run(token, filename, req.file.size, now.toISOString(), expires.toISOString());
+  saveFile.run(token, filename, req.file.size, 'file', now.toISOString(), expires.toISOString());
 
   // Store IV alongside the file metadata (in a sidecar file)
   fs.writeFileSync(path.join(UPLOADS_DIR, token + '.iv'), iv);
+
+  res.json({ token });
+});
+
+// Upload encrypted text
+app.post('/api/upload-text', (req, res) => {
+  const { data, iv } = req.body;
+
+  if (!data || !iv) {
+    return res.status(400).json({ error: 'Missing data or IV' });
+  }
+
+  const token = uuidv4().replace(/-/g, '').slice(0, 12);
+  const now = new Date();
+  const expires = new Date(now.getTime() + 10 * 60 * 1000);
+
+  // Save encrypted text to disk
+  fs.writeFileSync(path.join(UPLOADS_DIR, token), data);
+  fs.writeFileSync(path.join(UPLOADS_DIR, token + '.iv'), iv);
+
+  const size = Buffer.byteLength(data, 'utf8');
+  saveFile.run(token, 'text', size, 'text', now.toISOString(), expires.toISOString());
 
   res.json({ token });
 });
@@ -81,6 +104,7 @@ app.get('/api/status/:token', (req, res) => {
   res.json({
     filename: file.filename,
     size: file.size,
+    type: file.type || 'file',
     expires_at: file.expires_at
   });
 });
