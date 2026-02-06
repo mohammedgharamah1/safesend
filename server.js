@@ -75,11 +75,12 @@ app.post('/api/upload-text', (req, res) => {
   const now = new Date();
   const expires = new Date(now.getTime() + 10 * 60 * 1000);
 
-  // Save encrypted text to disk
-  fs.writeFileSync(path.join(UPLOADS_DIR, token), data);
+  // Decode base64 and save raw binary to disk
+  const rawData = Buffer.from(data, 'base64');
+  fs.writeFileSync(path.join(UPLOADS_DIR, token), rawData);
   fs.writeFileSync(path.join(UPLOADS_DIR, token + '.iv'), iv);
 
-  const size = Buffer.byteLength(data, 'utf8');
+  const size = rawData.length;
   saveFile.run(token, 'text', size, 'text', now.toISOString(), expires.toISOString());
 
   res.json({ token });
